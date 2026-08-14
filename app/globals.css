@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+:root {
+  /* ---- AeroAvalia design tokens ---- */
+  --bg-terminal: #0a0f1e;       /* deep terminal-at-night navy */
+  --bg-panel: #121a30;          /* boarding-pass / card surface */
+  --bg-panel-raised: #182142;   /* hovered / raised surface */
+  --line: #253057;              /* hairlines, perforation dashes */
+  --amber: #ffb627;             /* split-flap amber accent */
+  --amber-dim: #8a6a25;
+  --teal: #2fd9a0;              /* confirmed / success */
+  --red: #ff5d5d;               /* error */
+  --ink: #f4f6fb;               /* primary text */
+  --ink-muted: #8291ac;         /* secondary text */
+  --ink-faint: #4c5a80;
+
+  --font-display: var(--font-space-grotesk);
+  --font-body: var(--font-inter);
+  --font-mono: var(--font-plex-mono);
+}
+
+* {
+  border-color: var(--line);
+}
+
+html,
+body {
+  background: var(--bg-terminal);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle radar/runway grid ambience behind everything */
+.terminal-bg {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 182, 39, 0.08), transparent),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.02) 0px,
+      rgba(255, 255, 255, 0.02) 1px,
+      transparent 1px,
+      transparent 48px
+    );
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Split-flap board character */
+.flap {
+  display: inline-block;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+@keyframes flap-in {
+  0% {
+    transform: rotateX(90deg);
+    opacity: 0;
+  }
+  60% {
+    transform: rotateX(-10deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+.flap-animate {
+  animation: flap-in 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-style: preserve-3d;
+}
+
+/* Perforated tear line between boarding-pass stub and body */
+.perforation {
+  background-image: radial-gradient(circle, var(--ink-faint) 1.5px, transparent 1.5px);
+  background-size: 10px 10px;
+  background-repeat: repeat-x;
+  background-position: center;
+}
+
+@keyframes fly-across {
+  0% {
+    transform: translate(-10%, 10%) rotate(-2deg);
+  }
+  50% {
+    transform: translate(50%, -6%) rotate(1deg);
+  }
+  100% {
+    transform: translate(115%, -14%) rotate(-2deg);
+  }
+}
+.plane-fly {
+  animation: fly-across 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes drift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-200px); }
+}
+.clouds-drift {
+  animation: drift 18s linear infinite;
+}
+
+@keyframes runway-lights {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+.runway-light {
+  animation: runway-lights 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+::selection {
+  background: var(--amber);
+  color: #0a0f1e;
+}
+
+/* Focus ring consistent with terminal theme */
+:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+}

@@ -44,7 +44,6 @@ export default function Home() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Erro inesperado. Tente novamente.");
     } finally {
-      // keep the loading screen visible for a minimum, tasteful duration
       const elapsed = Date.now() - loadingStarted;
       const remaining = Math.max(0, 900 - elapsed);
       setTimeout(() => setShowLoading(false), remaining);
@@ -66,35 +65,40 @@ export default function Home() {
   }
 
   return (
-    <main className="relative flex min-h-dvh flex-col items-center justify-center px-4 py-12 sm:py-16">
-      {showLoading && <LoadingScreen message="Enviando sua avaliação..." />}
+    <main className="relative flex min-h-dvh flex-col items-center justify-center px-4 py-14 sm:py-20">
+      <AnimatePresence>
+        {showLoading && <LoadingScreen message="Enviando sua avaliação..." />}
+      </AnimatePresence>
 
       <a
         href="/admin"
-        className="fixed right-3 top-3 sm:right-6 sm:top-6 z-10 rounded-full border border-[var(--line)] bg-[var(--bg-panel)]/80 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-muted)] backdrop-blur transition-colors hover:border-[var(--amber)] hover:text-[var(--amber)]"
+        className="fixed right-4 top-4 sm:right-6 sm:top-6 z-10 rounded-full border border-[var(--line)] bg-white/90 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-muted)] backdrop-blur-sm transition-all hover:border-[var(--amber)] hover:text-[var(--amber)] hover:shadow-sm"
       >
         Avaliações recebidas
       </a>
 
-      <div className="mb-8 text-center">
+      <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mb-9 text-center"
+      >
         <p className="font-mono text-xs tracking-[0.4em] text-[var(--amber)] uppercase">
           Terminal de Passageiros
         </p>
-        <h1 className="font-display mt-2 text-3xl sm:text-4xl font-bold">
+        <h1 className="font-display mt-3 text-3xl sm:text-4xl font-bold text-[var(--ink)]">
           Avalie sua experiência
         </h1>
-        <p className="mt-2 text-sm text-[var(--ink-muted)] max-w-sm mx-auto">
+        <p className="mt-2.5 text-sm text-[var(--ink-muted)] max-w-sm mx-auto leading-relaxed">
           Seu feedback ajuda a melhorar cada etapa da sua passagem pelo aeroporto.
         </p>
-      </div>
+      </motion.div>
 
       {status === "loading" && (
         <div className="font-mono text-sm text-[var(--ink-muted)]">Carregando...</div>
       )}
 
-      {status !== "loading" && !session && (
-        <SignInCard />
-      )}
+      {status !== "loading" && !session && <SignInCard />}
 
       {status !== "loading" && session && (
         <BoardingPassCard
@@ -116,7 +120,7 @@ export default function Home() {
         onSubmit={handleSubmitFeedback}
       />
 
-      <footer className="mt-10 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--ink-faint)]">
+      <footer className="mt-12 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--ink-faint)]">
         AeroAvalia · Sistema de avaliação de passageiros
       </footer>
     </main>
@@ -125,22 +129,30 @@ export default function Home() {
 
 function SignInCard() {
   return (
-    <div className="w-full max-w-sm rounded-2xl border border-[var(--line)] bg-[var(--bg-panel)] p-8 text-center shadow-xl">
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--amber)]/10 text-2xl">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+      className="card-elevated w-full max-w-sm rounded-3xl border border-[var(--line)] bg-white p-9 text-center"
+    >
+      <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--amber)]/10 text-2xl">
         🛫
       </div>
-      <h2 className="font-display text-lg font-semibold">Identifique-se para avaliar</h2>
-      <p className="mt-2 text-sm text-[var(--ink-muted)]">
+      <h2 className="font-display text-lg font-semibold text-[var(--ink)]">
+        Identifique-se para avaliar
+      </h2>
+      <p className="mt-2.5 text-sm text-[var(--ink-muted)] leading-relaxed">
         Usamos apenas o nome da sua conta Google para registrar a avaliação. Seu e-mail
         nunca é coletado ou exibido.
       </p>
-      <button
+      <motion.button
+        whileTap={{ scale: 0.97 }}
         onClick={() => signIn("google", { callbackUrl: "/" })}
-        className="mt-6 w-full rounded-lg bg-white py-2.5 text-sm font-semibold text-[#1f1f1f] transition-transform hover:scale-[1.02] active:scale-[0.98]"
+        className="mt-7 w-full rounded-xl border border-[var(--line)] bg-white py-3 text-sm font-semibold text-[var(--ink)] shadow-sm transition-shadow hover:shadow-md"
       >
         Entrar com o Google
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 }
 
@@ -167,13 +179,12 @@ function BoardingPassCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-      className="w-full max-w-md overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--bg-panel)] shadow-2xl"
+      initial={{ opacity: 0, y: 20, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.45, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+      className="card-elevated w-full max-w-md overflow-hidden rounded-3xl border border-[var(--line)] bg-white"
     >
-      {/* header strip */}
-      <div className="flex items-center justify-between border-b border-dashed border-[var(--line)] bg-[var(--bg-panel-raised)] px-6 py-3">
+      <div className="flex items-center justify-between border-b border-dashed border-[var(--line)] bg-[var(--bg-panel)] px-7 py-4">
         <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--amber)]">
           Cartão de Avaliação
         </p>
@@ -182,13 +193,13 @@ function BoardingPassCard({
         </p>
       </div>
 
-      <div className="px-6 py-6">
+      <div className="px-7 py-7">
         <div className="flex items-center justify-between">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--ink-faint)]">
               Passageiro
             </p>
-            <p className="font-display text-lg font-semibold truncate max-w-[220px]">
+            <p className="font-display text-lg font-semibold mt-0.5 truncate max-w-[220px] text-[var(--ink)]">
               {name}
             </p>
           </div>
@@ -197,7 +208,7 @@ function BoardingPassCard({
               Status
             </p>
             <p
-              className="font-mono text-sm font-semibold"
+              className="font-mono text-sm font-semibold mt-0.5"
               style={{ color: phase === "rating" ? "var(--amber)" : "var(--teal)" }}
             >
               {phase === "rating" ? "EM ABERTO" : "CONFIRMADO"}
@@ -205,7 +216,7 @@ function BoardingPassCard({
           </div>
         </div>
 
-        <div className="perforation my-6 h-px w-full" />
+        <div className="perforation my-7 h-px w-full" />
 
         <AnimatePresence mode="wait">
           {phase === "rating" && (
@@ -214,27 +225,38 @@ function BoardingPassCard({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-6"
+              transition={{ duration: 0.2 }}
+              className="flex flex-col items-center gap-7"
             >
               <StarRating value={rating} onChange={setRating} disabled={sending} />
 
-              {error && (
-                <p className="text-sm text-center" style={{ color: "var(--red)" }}>
-                  {error}
-                </p>
-              )}
+              <AnimatePresence>
+                {error && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="text-sm text-center overflow-hidden"
+                    style={{ color: "var(--red)" }}
+                  >
+                    {error}
+                  </motion.p>
+                )}
+              </AnimatePresence>
 
               <AnimatePresence>
                 {rating > 0 && (
                   <motion.button
                     key="submit"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ type: "spring", damping: 24, stiffness: 340 }}
+                    whileTap={{ scale: 0.97 }}
                     disabled={sending}
                     onClick={onSubmitRating}
-                    className="w-full rounded-lg py-3 text-sm font-semibold transition-transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50"
-                    style={{ background: "var(--amber)", color: "#0a0f1e" }}
+                    className="w-full rounded-xl py-3.5 text-sm font-semibold text-white shadow-sm transition-opacity disabled:opacity-50"
+                    style={{ background: "var(--amber)" }}
                   >
                     {sending ? "Enviando..." : "Enviar avaliação"}
                   </motion.button>
@@ -248,31 +270,36 @@ function BoardingPassCard({
               key="done"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              transition={{ type: "spring", damping: 24, stiffness: 300 }}
               className="flex flex-col items-center gap-5 text-center"
             >
-              <div
+              <motion.div
+                initial={{ scale: 0.6, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", damping: 14, stiffness: 300, delay: 0.05 }}
                 className="flex h-14 w-14 items-center justify-center rounded-full text-2xl"
-                style={{ background: "rgba(47,217,160,0.12)", color: "var(--teal)" }}
+                style={{ background: "rgba(22,163,74,0.1)", color: "var(--teal)" }}
               >
                 ✓
-              </div>
+              </motion.div>
               <div>
-                <p className="font-display font-semibold text-lg">
+                <p className="font-display font-semibold text-lg text-[var(--ink)]">
                   Avaliação enviada com sucesso!
                 </p>
-                <p className="mt-1 text-sm text-[var(--ink-muted)]">
+                <p className="mt-1.5 text-sm text-[var(--ink-muted)]">
                   {"★".repeat(rating)}
                   {"☆".repeat(5 - rating)} — obrigado por avaliar sua experiência.
                 </p>
               </div>
 
               {phase === "submitted" ? (
-                <button
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
                   onClick={onOpenFeedback}
-                  className="w-full rounded-lg border border-[var(--line)] py-3 text-sm font-semibold text-[var(--ink)] hover:border-[var(--amber)] hover:text-[var(--amber)] transition-colors"
+                  className="w-full rounded-xl border border-[var(--line)] py-3.5 text-sm font-semibold text-[var(--ink)] transition-colors hover:border-[var(--amber)] hover:text-[var(--amber)]"
                 >
                   Enviar feedback
-                </button>
+                </motion.button>
               ) : (
                 <p className="font-mono text-xs uppercase tracking-[0.25em] text-[var(--teal)]">
                   Feedback registrado — obrigado!
@@ -283,8 +310,7 @@ function BoardingPassCard({
         </AnimatePresence>
       </div>
 
-      {/* barcode-style footer */}
-      <div className="flex h-6 w-full items-end gap-[2px] overflow-hidden bg-[var(--bg-panel-raised)] px-6 pb-1.5 opacity-60">
+      <div className="flex h-6 w-full items-end gap-[2px] overflow-hidden bg-[var(--bg-panel)] px-7 pb-1.5 opacity-50">
         {Array.from({ length: 48 }).map((_, i) => (
           <span
             key={i}

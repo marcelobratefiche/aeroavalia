@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import clsx from "clsx";
 
 const LABELS: Record<number, string> = {
@@ -24,15 +25,16 @@ export function StarRating({
   const shown = hover ?? value;
 
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="flex flex-col items-center gap-4">
       <div
         role="radiogroup"
         aria-label="Nota da experiência, de 1 a 5 estrelas"
-        className="flex gap-1.5 sm:gap-2"
+        className="flex gap-2 sm:gap-2.5"
         onMouseLeave={() => setHover(null)}
       >
         {[1, 2, 3, 4, 5].map((n) => {
           const active = n <= shown;
+          const justSelected = n <= value && n === value;
           return (
             <button
               key={n}
@@ -45,29 +47,42 @@ export function StarRating({
               onFocus={() => setHover(n)}
               onBlur={() => setHover(null)}
               onClick={() => onChange(n)}
-              className={clsx(
-                "group relative text-4xl sm:text-5xl leading-none transition-transform duration-150 ease-out",
-                "disabled:cursor-not-allowed disabled:opacity-50",
-                active ? "scale-110" : "scale-100 hover:scale-105"
-              )}
-              style={{
-                color: active ? "var(--amber)" : "var(--ink-faint)",
-                filter: active ? "drop-shadow(0 0 10px rgba(255,182,39,0.45))" : "none",
-                transition:
-                  "color 150ms ease, transform 150ms ease, filter 150ms ease",
-              }}
+              className="group relative disabled:cursor-not-allowed disabled:opacity-40"
             >
-              {active ? "★" : "☆"}
+              {active && justSelected && (
+                <span
+                  className="glow-pulse absolute inset-0 rounded-full blur-md"
+                  style={{ background: "var(--amber)" }}
+                  aria-hidden="true"
+                />
+              )}
+              <motion.span
+                className="relative block text-4xl sm:text-5xl leading-none"
+                animate={{
+                  scale: active ? 1.12 : 1,
+                  color: active ? "var(--amber)" : "var(--ink-faint)",
+                }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 500, damping: 22 }}
+              >
+                {active ? "★" : "☆"}
+              </motion.span>
             </button>
           );
         })}
       </div>
-      <p
-        className="font-mono text-xs sm:text-sm uppercase tracking-[0.25em] transition-opacity duration-150"
+      <motion.p
+        key={shown}
+        initial={{ opacity: 0, y: -4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.18 }}
+        className={clsx(
+          "font-mono text-xs sm:text-sm uppercase tracking-[0.25em]"
+        )}
         style={{ color: shown ? "var(--amber)" : "var(--ink-faint)" }}
       >
         {shown ? LABELS[shown] : "Toque em uma estrela"}
-      </p>
+      </motion.p>
     </div>
   );
 }

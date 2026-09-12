@@ -100,113 +100,126 @@ export function AdminPanel({ adminName }: { adminName: string }) {
   }
 
   return (
-    <main className="min-h-dvh px-4 py-8 sm:py-12">
-      {firstLoadScreen && <LoadingScreen message="Consultando o painel de chegadas..." />}
+    <main className="min-h-dvh px-4 py-10 sm:py-14">
+      <AnimatePresence>
+        {firstLoadScreen && <LoadingScreen message="Consultando o painel de chegadas..." />}
+      </AnimatePresence>
 
       <div className="mx-auto max-w-2xl">
-        <header className="mb-6 flex items-center justify-between">
+        <motion.header
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35 }}
+          className="mb-8 flex items-center justify-between"
+        >
           <div>
             <p className="font-mono text-xs tracking-[0.35em] text-[var(--amber)] uppercase">
               Painel administrativo
             </p>
-            <h1 className="font-display mt-1 text-2xl font-bold">Avaliações recebidas</h1>
+            <h1 className="font-display mt-1.5 text-2xl font-bold text-[var(--ink)]">
+              Avaliações recebidas
+            </h1>
             <p className="mt-1 text-sm text-[var(--ink-muted)]">
               {adminName} · {total !== null ? `${total} avaliações no total` : "\u00A0"}
             </p>
           </div>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-faint)] hover:text-[var(--ink)] transition-colors"
+            className="font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-faint)] transition-colors hover:text-[var(--ink)]"
           >
             Sair
           </button>
-        </header>
+        </motion.header>
 
-        {/* board header row, arrivals-board style */}
-        <div className="mb-2 grid grid-cols-[1fr_auto_auto] gap-4 border-b border-[var(--line)] px-2 pb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-faint)]">
-          <span>Passageiro</span>
-          <span>Nota</span>
-          <span className="hidden sm:block">Data</span>
-        </div>
-
-        {loading && !firstLoadScreen && (
-          <div className="py-10 text-center font-mono text-sm text-[var(--ink-muted)]">
-            Carregando...
+        <div className="card-elevated rounded-2xl border border-[var(--line)] bg-white p-2 sm:p-3">
+          <div className="mb-1 grid grid-cols-[1fr_auto_auto] gap-4 border-b border-[var(--line)] px-4 pb-3 pt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--ink-faint)]">
+            <span>Passageiro</span>
+            <span>Nota</span>
+            <span className="hidden sm:block">Data</span>
           </div>
-        )}
 
-        {!loading && error && (
-          <div className="flex flex-col items-center gap-3 py-10 text-center">
-            <p className="text-sm" style={{ color: "var(--red)" }}>
-              {error}
-            </p>
-            <button
-              onClick={loadFirstPage}
-              className="rounded-lg border border-[var(--line)] px-4 py-2 text-sm hover:border-[var(--amber)] hover:text-[var(--amber)] transition-colors"
-            >
-              Tente novamente
-            </button>
-          </div>
-        )}
+          {loading && !firstLoadScreen && (
+            <div className="py-12 text-center font-mono text-sm text-[var(--ink-muted)]">
+              Carregando...
+            </div>
+          )}
 
-        {!loading && !error && items.length === 0 && (
-          <div className="py-16 text-center">
-            <p className="text-4xl mb-3">🛬</p>
-            <p className="font-display font-semibold">Nenhuma avaliação encontrada</p>
-            <p className="mt-1 text-sm text-[var(--ink-muted)]">
-              Assim que os passageiros avaliarem, elas aparecem aqui.
-            </p>
-          </div>
-        )}
-
-        {!loading && !error && items.length > 0 && (
-          <ul className="divide-y divide-[var(--line)]">
-            {items.map((s, i) => (
-              <motion.li
-                key={s.id}
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: Math.min(i, 10) * 0.03, duration: 0.25 }}
+          {!loading && error && (
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <p className="text-sm" style={{ color: "var(--red)" }}>
+                {error}
+              </p>
+              <button
+                onClick={loadFirstPage}
+                className="rounded-lg border border-[var(--line)] px-4 py-2 text-sm transition-colors hover:border-[var(--amber)] hover:text-[var(--amber)]"
               >
-                <button
-                  onClick={() => openDetail(s.id)}
-                  className="grid w-full grid-cols-[1fr_auto_auto] items-center gap-4 px-2 py-3.5 text-left transition-colors hover:bg-[var(--bg-panel)] rounded-lg"
+                Tente novamente
+              </button>
+            </div>
+          )}
+
+          {!loading && !error && items.length === 0 && (
+            <div className="py-16 text-center">
+              <p className="text-4xl mb-3">🛬</p>
+              <p className="font-display font-semibold text-[var(--ink)]">
+                Nenhuma avaliação encontrada
+              </p>
+              <p className="mt-1 text-sm text-[var(--ink-muted)]">
+                Assim que os passageiros avaliarem, elas aparecem aqui.
+              </p>
+            </div>
+          )}
+
+          {!loading && !error && items.length > 0 && (
+            <ul className="divide-y divide-[var(--line)]">
+              {items.map((s, i) => (
+                <motion.li
+                  key={s.id}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: Math.min(i, 10) * 0.035, duration: 0.25 }}
                 >
-                  <span className="truncate font-medium">
-                    {s.displayName}
-                    {s.hasFeedback && (
-                      <span
-                        className="ml-2 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide"
-                        style={{ background: "rgba(47,217,160,0.12)", color: "var(--teal)" }}
-                      >
-                        feedback
-                      </span>
-                    )}
-                  </span>
-                  <span className="font-mono text-sm" style={{ color: "var(--amber)" }}>
-                    {"★".repeat(s.rating)}
-                    <span style={{ color: "var(--ink-faint)" }}>
-                      {"★".repeat(5 - s.rating)}
+                  <button
+                    onClick={() => openDetail(s.id)}
+                    className="grid w-full grid-cols-[1fr_auto_auto] items-center gap-4 rounded-xl px-4 py-4 text-left transition-colors hover:bg-[var(--bg-panel)]"
+                  >
+                    <span className="truncate font-medium text-[var(--ink)]">
+                      {s.displayName}
+                      {s.hasFeedback && (
+                        <span
+                          className="ml-2 rounded-full px-2 py-0.5 font-mono text-[9px] uppercase tracking-wide"
+                          style={{ background: "rgba(22,163,74,0.1)", color: "var(--teal)" }}
+                        >
+                          feedback
+                        </span>
+                      )}
                     </span>
-                  </span>
-                  <span className="hidden sm:block font-mono text-xs text-[var(--ink-faint)]">
-                    {formatDateTime(s.createdAt)}
-                  </span>
-                </button>
-              </motion.li>
-            ))}
-          </ul>
-        )}
+                    <span className="font-mono text-sm" style={{ color: "var(--amber)" }}>
+                      {"★".repeat(s.rating)}
+                      <span style={{ color: "var(--ink-faint)" }}>
+                        {"★".repeat(5 - s.rating)}
+                      </span>
+                    </span>
+                    <span className="hidden sm:block font-mono text-xs text-[var(--ink-faint)]">
+                      {formatDateTime(s.createdAt)}
+                    </span>
+                  </button>
+                </motion.li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {!loading && cursor && (
           <div className="mt-6 flex justify-center">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.97 }}
               onClick={loadMore}
               disabled={loadingMore}
-              className="rounded-lg border border-[var(--line)] px-5 py-2.5 text-sm font-medium hover:border-[var(--amber)] hover:text-[var(--amber)] transition-colors disabled:opacity-50"
+              className="rounded-xl border border-[var(--line)] bg-white px-5 py-2.5 text-sm font-medium shadow-sm transition-colors hover:border-[var(--amber)] hover:text-[var(--amber)] disabled:opacity-50"
             >
               {loadingMore ? "Carregando..." : "Carregar mais"}
-            </button>
+            </motion.button>
           </div>
         )}
       </div>
@@ -214,22 +227,23 @@ export function AdminPanel({ adminName }: { adminName: string }) {
       <AnimatePresence>
         {(detailLoading || selected) && (
           <motion.div
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-[#0c1e33]/30 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={() => setSelected(null)}
           >
             <motion.div
               onClick={(e) => e.stopPropagation()}
-              className="w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl border border-[var(--line)] bg-[var(--bg-panel)] p-6 shadow-2xl"
-              initial={{ y: 60, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 40, opacity: 0 }}
-              transition={{ type: "spring", damping: 26, stiffness: 300 }}
+              className="card-elevated w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl border border-[var(--line)] bg-white p-7"
+              initial={{ y: 48, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 32, opacity: 0, scale: 0.98 }}
+              transition={{ type: "spring", damping: 28, stiffness: 340 }}
             >
               {detailLoading && (
-                <div className="py-10 text-center font-mono text-sm text-[var(--ink-muted)]">
+                <div className="py-12 text-center font-mono text-sm text-[var(--ink-muted)]">
                   Carregando...
                 </div>
               )}
@@ -240,20 +254,20 @@ export function AdminPanel({ adminName }: { adminName: string }) {
                       <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--amber)]">
                         Detalhe da avaliação
                       </p>
-                      <h2 className="font-display text-xl font-semibold mt-1">
+                      <h2 className="font-display text-xl font-semibold mt-1.5 text-[var(--ink)]">
                         {selected.displayName}
                       </h2>
                     </div>
                     <button
                       onClick={() => setSelected(null)}
                       aria-label="Fechar"
-                      className="text-[var(--ink-faint)] hover:text-[var(--ink)] text-xl leading-none"
+                      className="text-[var(--ink-faint)] hover:text-[var(--ink)] text-xl leading-none transition-colors"
                     >
                       ×
                     </button>
                   </div>
 
-                  <p className="mt-3 font-mono text-lg" style={{ color: "var(--amber)" }}>
+                  <p className="mt-3.5 font-mono text-lg" style={{ color: "var(--amber)" }}>
                     {"★".repeat(selected.rating)}
                     <span style={{ color: "var(--ink-faint)" }}>
                       {"★".repeat(5 - selected.rating)}
@@ -264,14 +278,14 @@ export function AdminPanel({ adminName }: { adminName: string }) {
                     Enviado em {formatDateTime(selected.createdAt)}
                   </p>
 
-                  <div className="perforation my-4 h-px w-full" />
+                  <div className="perforation my-5 h-px w-full" />
 
                   <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--ink-faint)] mb-1">
+                    <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--ink-faint)] mb-1.5">
                       Feedback
                     </p>
                     {selected.feedback ? (
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                      <p className="text-sm leading-relaxed whitespace-pre-wrap text-[var(--ink)]">
                         {selected.feedback}
                       </p>
                     ) : (
@@ -281,7 +295,7 @@ export function AdminPanel({ adminName }: { adminName: string }) {
                     )}
                   </div>
 
-                  <p className="mt-5 font-mono text-[10px] text-[var(--ink-faint)] break-all">
+                  <p className="mt-6 font-mono text-[10px] text-[var(--ink-faint)] break-all">
                     ID: {selected.id}
                   </p>
                 </>

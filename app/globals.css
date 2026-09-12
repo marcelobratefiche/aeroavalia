@@ -1,18 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  /* ---- AeroAvalia design tokens ---- */
-  --bg-terminal: #0a0f1e;       /* deep terminal-at-night navy */
-  --bg-panel: #121a30;          /* boarding-pass / card surface */
-  --bg-panel-raised: #182142;   /* hovered / raised surface */
-  --line: #253057;              /* hairlines, perforation dashes */
-  --amber: #ffb627;             /* split-flap amber accent */
-  --amber-dim: #8a6a25;
-  --teal: #2fd9a0;              /* confirmed / success */
-  --red: #ff5d5d;               /* error */
-  --ink: #f4f6fb;               /* primary text */
-  --ink-muted: #8291ac;         /* secondary text */
-  --ink-faint: #4c5a80;
+  /* ---- AeroAvalia design tokens: clear-sky theme ---- */
+  --bg-terminal: #ffffff;       /* daylight terminal, white base */
+  --bg-panel: #f6fbff;          /* boarding-pass / card surface, sky tint */
+  --bg-panel-raised: #eaf5fd;   /* hovered / raised surface */
+  --line: #d3ebfa;              /* hairlines, perforation dashes */
+  --amber: #0ea5e9;             /* primary accent: sky blue */
+  --amber-dim: #bae6fd;
+  --teal: #16a34a;              /* confirmed / success */
+  --red: #dc2626;               /* error */
+  --ink: #0c1e33;               /* primary text, deep sky-navy */
+  --ink-muted: #5b7b99;         /* secondary text */
+  --ink-faint: #a9cbe4;         /* faint/disabled */
 
   --font-display: var(--font-space-grotesk);
   --font-body: var(--font-inter);
@@ -31,17 +31,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle radar/runway grid ambience behind everything */
+/* Soft sky ambience behind everything: faint cloud washes, no grid */
 .terminal-bg {
   background-image:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 182, 39, 0.08), transparent),
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.02) 0px,
-      rgba(255, 255, 255, 0.02) 1px,
-      transparent 1px,
-      transparent 48px
-    );
+    radial-gradient(ellipse 70% 45% at 15% -5%, rgba(14, 165, 233, 0.08), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 10%, rgba(14, 165, 233, 0.06), transparent);
 }
 
 .font-display {
@@ -85,31 +79,64 @@ body {
   background-position: center;
 }
 
-@keyframes fly-across {
+/* ---- Upgraded flight sequence: climb, cruise, bank, with a contrail ---- */
+@keyframes fly-path {
   0% {
-    transform: translate(-10%, 10%) rotate(-2deg);
+    offset-distance: 0%;
+    transform: translate(-50%, -50%) rotate(-6deg) scale(0.9);
   }
-  50% {
-    transform: translate(50%, -6%) rotate(1deg);
+  35% {
+    transform: translate(-50%, -50%) rotate(4deg) scale(1.05);
+  }
+  65% {
+    transform: translate(-50%, -50%) rotate(-2deg) scale(1.05);
   }
   100% {
-    transform: translate(115%, -14%) rotate(-2deg);
+    offset-distance: 100%;
+    transform: translate(-50%, -50%) rotate(8deg) scale(0.92);
   }
 }
 .plane-fly {
-  animation: fly-across 3.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  offset-path: path("M -40,220 C 160,40 420,320 760,80");
+  offset-rotate: 0deg;
+  animation: fly-path 3.6s cubic-bezier(0.45, 0, 0.4, 1) infinite;
+  will-change: offset-distance, transform;
+}
+
+@keyframes contrail-fade {
+  0% {
+    stroke-dashoffset: 1200;
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.55;
+  }
+  90% {
+    opacity: 0.15;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+.contrail-path {
+  stroke-dasharray: 1200;
+  animation: contrail-fade 3.6s cubic-bezier(0.45, 0, 0.4, 1) infinite;
 }
 
 @keyframes drift {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-200px); }
+  100% { transform: translateX(-220px); }
 }
 .clouds-drift {
-  animation: drift 18s linear infinite;
+  animation: drift 22s linear infinite;
+}
+.clouds-drift-slow {
+  animation: drift 34s linear infinite;
 }
 
 @keyframes runway-lights {
-  0%, 100% { opacity: 0.25; }
+  0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
 .runway-light {
@@ -126,10 +153,10 @@ body {
 
 ::selection {
   background: var(--amber);
-  color: #0a0f1e;
+  color: #ffffff;
 }
 
-/* Focus ring consistent with terminal theme */
+/* Focus ring consistent with the sky theme */
 :focus-visible {
   outline: 2px solid var(--amber);
   outline-offset: 2px;
